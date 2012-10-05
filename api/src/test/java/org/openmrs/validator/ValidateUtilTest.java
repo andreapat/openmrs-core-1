@@ -27,17 +27,10 @@ public class ValidateUtilTest {
 		Location loc = new Location();
 		ValidateUtil.validate(loc);
 	}
-
-	/**
-	 * @see ValidateUtil#validate(Object)
-	 * @verifies throw APIException if object is null
-	 */
-	@Test
-	public void validate_shouldThrowAPIExceptionIfObjectIsNull()
-			throws Exception {
-		Object obj = null;
-		
-		ValidateUtil.validate(obj);
-		Assert.assertNotNull(obj);
+	
+	@Test(expected = APIException.class)
+	public void validate_shouldThrowThrowAPIExceptionIfTheInputIsNull() throws Exception {
+		ValidateUtil.validate(null);
 	}
+	
 }
