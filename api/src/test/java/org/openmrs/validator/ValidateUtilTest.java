@@ -70,9 +70,9 @@ public class ValidateUtilTest extends BaseContextSensitiveTest {
 	
 	@Test(expected = APIException.class)
 	public void validate_shouldThrowThrowAPIExceptionIfTheInputIsNull() throws Exception {
-			BindException errors = new BindException(new Object(), "");
-			//Context.getAdministrationService().validate(null, errors);
-			ValidateUtil.validate(null, errors);
-		}
+		BindException errors = new BindException(new Object(), "");
+		//Context.getAdministrationService().validate(null, errors);
+		ValidateUtil.validate(null, errors);
+	}
 	
 }
