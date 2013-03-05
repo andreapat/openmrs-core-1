@@ -93,4 +93,9 @@ public interface OrderDAO {
 	 */
 	public List<DrugOrder> getDrugOrdersByPatientAndIngredient(Patient patient, Concept ingredient);
 	
+	/**
+	 * @see HibernateOrderDAO#deleteObsThatReference(Order)
+	 */
+	public void deleteObsThatReference(Order order);
+	
 }

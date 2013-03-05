@@ -28,16 +28,22 @@ import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
+
+import org.openmrs.Obs;
+import org.openmrs.api.ObsService;
+import org.openmrs.api.db.ObsDAO;
+
 import org.openmrs.Order.OrderAction;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 
+import org.openmrs.api.context.Context;
+
 /**
  * This class should not be used directly. This is just a common implementation of the OrderDAO that
- * is used by the OrderService. This class is injected by spring into the desired OrderService
- * class. This injection is determined by the xml mappings and elements in the spring application
+ * is used by the OrderService. This class is injected by spring into the desired OrderServic * class. This injection is determined by the xml mappings and elements in the spring application
  * context: /metadata/api/spring/applicationContext.xml.<br/>
  * <br/>
  * The OrderService should be used for all Order related database manipulation.
@@ -49,10 +55,17 @@ public class HibernateOrderDAO implements OrderDAO {
 	
 	protected static final Log log = LogFactory.getLog(HibernateOrderDAO.class);
 	
+	ObsService obsService = Context.getObsService();
+	
 	/**
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
+	
+	/**
+	 * The data access object for the obs service
+	 */
+	//protected ObsDAO dao;
 	
 	public HibernateOrderDAO() {
 	}
@@ -202,4 +215,24 @@ public class HibernateOrderDAO implements OrderDAO {
 		return (List<DrugOrder>) searchDrugOrderCriteria.list();
 	}
 	
+	/*
+	 *  @see org.openmrs.api.db.OrderDAO#deleteObsThatReference(org.openmrs.Order)
+	 */
+	@SuppressWarnings("unchecked")
+	public void deleteObsThatReference(Order order) {
+		int orderId;
+		
+		if (order.getOrderId() != null) {
+			orderId = order.getOrderId();
+			
+			String sqlQuery = "select * from Obs obs where obs.orderId = :order_id";
+			List<Obs> results = sessionFactory.getCurrentSession().createSQLQuery(sqlQuery).setInteger("order_id", orderId)
+			        .list();
+			
+			for (Obs obs : results) {
+				// delete Obs that references order 
+				obsService.purgeObs(obs);
+			}
+		}
+	}
 }
